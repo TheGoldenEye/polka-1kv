@@ -40,6 +40,53 @@ yarn polkadot
 yarn kusama
 ```
 
+You will get an output like this:
+
+``` bash
+---------------------------------------------------------------
+polka-1kv: v1.0.0  Copyright © 2021 GoldenEye
+---------------------------------------------------------------
+
+Name: DrNo-sv-validator-1
+Stash: 14gYRjn6fn5hu45zEAtXodPDbtaditK8twoWUXFi6DsLwd31
+Version: 0.8.27-2f845699-x86_64-linux-gnu
+Updated: true
+Discovered: 2020-11-27 11:35:14
+Nominated: 2021-1-17 11:15:28
+Online Since: 2020-12-31 14:24:39
+Offline Since: -
+Offline Accumulated: 0
+Rank: 2
+  2021-1-10 16:40:06, StartEra:222, ActiveEra:223
+  2021-1-15 16:40:11, StartEra:227, ActiveEra:228
+Faults: 0
+
+Name: redpenguin
+Stash: 15KDFYfFjdqhp3MDFEtHuyu9kLpXbT7k1zjx78MphViFdCaU
+Version: 0.8.27-2f845699-x86_64-linux-gnu
+Updated: true
+Discovered: 2020-12-8 11:21:45
+Nominated: 2021-1-16 11:00:00
+Online Since: 2021-1-8 18:18:31
+Offline Since: -
+Offline Accumulated: 0
+Rank: 1
+  2021-1-16 16:40:07, StartEra:228, ActiveEra:229
+Faults: 0
+
+Name: Ondin
+Stash: 13ond4N8gejhNeYFxAiCtDymHvgsyQMW3L2kvKMEPtmvi3Cu
+Version: 0.8.27-2f845699-x86_64-linux-gnu
+Updated: true
+Discovered: 2021-1-6 13:49:53
+Nominated: 2021-1-15 11:15:00
+Online Since: 2021-1-7 17:47:25
+Offline Since: -
+Offline Accumulated: 0
+Rank: 0
+Faults: 0
+```
+
 ## Authors
 
 * GoldenEye
