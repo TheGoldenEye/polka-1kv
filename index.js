@@ -72,6 +72,14 @@ function outData(data) {
   data.faultEvents.forEach(elem => {
     out(valid, ' ', TimeStr(elem.when) + ', Reason:' + elem.reason);
   });
+  const arr = Array.isArray(data.unclaimedEras);
+  if (arr) {
+    const len = data.unclaimedEras.length;
+    out(valid, 'UnclaimedEras:', len);
+    if (len)
+      out(valid, ' ', RangeStr(data.unclaimedEras));
+  }
+
   console.log();
 }
 
@@ -82,6 +90,35 @@ function TimeStr(timestamp) {
 
   const d = new Date(timestamp);
   return d.toLocaleString();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+function RangeStr(arr) {
+
+  function addRange(s, from, to) {
+    if (from > 0) { // existing previous range
+      if (s.length)
+        s = s + ',';
+      s = s + from;
+      if (to > from)
+        s = s + '-' + to;
+    }
+    return s;
+  }
+
+  let s = '';
+  let from = -1;
+  let to = -1;
+  arr.forEach(elem => {
+    const n = Number(elem);
+    if (n == to + 1) // extend range first-last
+      to = n;
+    else {
+      s = addRange(s, from, to);
+      from = to = n;
+    }
+  });
+  return addRange(s, from, to);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
