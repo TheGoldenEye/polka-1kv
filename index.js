@@ -11,7 +11,9 @@ const getPackageVersion = require('@jsbits/get-package-version');
 const ver = getPackageVersion();
 console.log('\n---------------------------------------------------------------');
 console.log(`polka-1kv: v${ver}  Copyright © 2021 GoldenEye`);
-console.log('---------------------------------------------------------------\n');
+console.log('---------------------------------------------------------------');
+console.log('Data shown from:', TimeStr(new Date()));
+console.log();
 
 let param = process.argv.length < 3 ? 'polkadot.json' : process.argv[2];
 if (!param.endsWith('.json'))
@@ -67,27 +69,33 @@ function outData(data) {
   if (!valid)
     out(valid, 'Invalidity Reasons:', data.invalidityReasons);
   out(valid, 'Stash:', data.stash);
-  out(valid, 'Version:', data.version);
-  out(valid, 'Updated:', data.updated);
+  if (data.version)
+    out(valid, 'Version:', data.version);
+  if (data.updated)
+    out(valid, 'Updated:', data.updated);
   out(valid, 'Discovered:', TimeStr(data.discoveredAt));
   out(valid, 'Nominated:', TimeStr(data.nominatedAt));
   out(valid, 'Online Since:', TimeStr(data.onlineSince));
   out(valid, 'Offline Since:', TimeStr(data.offlineSince));
   out(valid, 'Offline Accumulated:', data.offlineAccumulated);
   out(valid, 'Rank:', data.rank);
-  data.rankEvents.forEach(elem => {
-    out(valid, ' ', TimeStr(elem.when) + ', StartEra:' + elem.startEra + ', ActiveEra:' + elem.activeEra);
-  });
+  if (Array.isArray(data.rankEvents))
+    data.rankEvents.forEach(elem => {
+      out(valid, ' ', TimeStr(elem.when) + ', StartEra:' + elem.startEra + ', ActiveEra:' + elem.activeEra);
+    });
   out(valid, 'Faults:', data.faults);
-  data.faultEvents.forEach(elem => {
-    out(valid, ' ', TimeStr(elem.when) + ', Reason:' + elem.reason);
-  });
-  const arr = Array.isArray(data.unclaimedEras);
-  if (arr) {
+  if (Array.isArray(data.faultEvents))
+    data.faultEvents.forEach(elem => {
+      out(valid, ' ', TimeStr(elem.when) + ', Reason:' + elem.reason);
+    });
+  if (Array.isArray(data.unclaimedEras)) {
     const len = data.unclaimedEras.length;
     out(valid, 'UnclaimedEras:', len);
     if (len)
       out(valid, ' ', RangeStr(data.unclaimedEras));
+    out(valid, 'Commission:', data.commission + '%');
+    out(valid, 'Identity:', IdentityStr(data.identity));
+    out(valid, 'Inclusion:', data.inclusion);
   }
 
   console.log();
@@ -129,6 +137,17 @@ function RangeStr(arr) {
     }
   });
   return addRange(s, from, to);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+function IdentityStr(identity) {
+  let s = identity.name;
+  if (identity.sub) {
+    s = s + '/' + identity.sub;
+  }
+  if (identity.verified)
+    s = s + ' (verified)';
+  return s;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
