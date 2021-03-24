@@ -1,6 +1,6 @@
 {
   "name": "polka_1kv",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Display of validators data from 'Polkadot Thousand Validators Programme'",
   "main": "index.js",
   "repository": "git@github.com:TheGoldenEye/polka-1kv.git",
