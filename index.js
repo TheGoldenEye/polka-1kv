@@ -69,34 +69,57 @@ function outData(data) {
   if (!valid)
     out(valid, 'Invalidity Reasons:', data.invalidityReasons);
   out(valid, 'Stash:', data.stash);
-  if (data.version)
+
+  if (Exist(data.version))
     out(valid, 'Version:', data.version);
-  if (data.updated)
+
+  if (Exist(data.updated))
     out(valid, 'Updated:', data.updated);
-  out(valid, 'Discovered:', TimeStr(data.discoveredAt));
-  out(valid, 'Nominated:', TimeStr(data.nominatedAt));
-  out(valid, 'Online Since:', TimeStr(data.onlineSince));
-  out(valid, 'Offline Since:', TimeStr(data.offlineSince));
-  out(valid, 'Offline Accumulated:', data.offlineAccumulated);
-  out(valid, 'Rank:', data.rank);
+
+  if (Exist(data.discoveredAt))
+    out(valid, 'Discovered:', TimeStr(data.discoveredAt));
+
+  if (Exist(data.nominatedAt))
+    out(valid, 'Nominated:', TimeStr(data.nominatedAt));
+
+  if (Exist(data.onlineSince))
+    out(valid, 'Online Since:', TimeStr(data.onlineSince));
+
+  if (Exist(data.offlineSince))
+    out(valid, 'Offline Since:', TimeStr(data.offlineSince));
+
+  if (Exist(data.offlineAccumulated))
+    out(valid, 'Offline Accumulated:', data.offlineAccumulated);
+
+  if (Exist(data.rank))
+    out(valid, 'Rank:', data.rank);
   if (Array.isArray(data.rankEvents))
     data.rankEvents.forEach(elem => {
       out(valid, ' ', TimeStr(elem.when) + ', StartEra:' + elem.startEra + ', ActiveEra:' + elem.activeEra);
     });
-  out(valid, 'Faults:', data.faults);
+
+  if (Exist(data.faults))
+    out(valid, 'Faults:', data.faults);
   if (Array.isArray(data.faultEvents))
     data.faultEvents.forEach(elem => {
       out(valid, ' ', TimeStr(elem.when) + ', Reason:' + elem.reason);
     });
+
   if (Array.isArray(data.unclaimedEras)) {
     const len = data.unclaimedEras.length;
     out(valid, 'UnclaimedEras:', len);
     if (len)
       out(valid, ' ', RangeStr(data.unclaimedEras));
-    out(valid, 'Commission:', data.commission + '%');
-    out(valid, 'Identity:', IdentityStr(data.identity));
-    out(valid, 'Inclusion:', data.inclusion);
   }
+
+  if (Exist(data.commission))
+    out(valid, 'Commission:', data.commission + '%');
+
+  if (Exist(data.identity))
+    out(valid, 'Identity:', IdentityStr(data.identity));
+
+  if (Exist(data.inclusion))
+    out(valid, 'Inclusion:', data.inclusion);
 
   console.log();
 }
@@ -148,6 +171,11 @@ function IdentityStr(identity) {
   if (identity.verified)
     s = s + ' (verified)';
   return s;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+function Exist(value) {
+  return typeof value !== 'undefined';
 }
 
 //---------------------------------------------------------------------------------------------------------------------
