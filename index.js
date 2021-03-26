@@ -26,6 +26,8 @@ axios.get(cfg.url)
     const arr = response.data;
     const all = cfg.names.length == 0;
 
+    arr.sort(sortInclusion);
+
     arr.forEach(elem => {
       if (all || cfg.names.includes(elem.name))
         outData(elem);
@@ -184,4 +186,11 @@ function out(valid, title, data) {
     console.log(title + ' ' + data);
   else
     console.log(chalk.red(title + ' ' + data));
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+function sortInclusion(a, b) {
+  const aIncl = isNaN(a.inclusion) ? -1 : a.inclusion;
+  const bIncl = isNaN(b.inclusion) ? -1 : b.inclusion;
+  return aIncl - bIncl;
 }
