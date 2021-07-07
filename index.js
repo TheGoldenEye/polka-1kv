@@ -4,6 +4,9 @@ const axios = require('axios');
 const chalk = require('chalk');
 const fs = require('fs');
 const getPackageVersion = require('@jsbits/get-package-version');
+const {
+  isNullOrUndefined
+} = require('util');
 
 //---------------------------------------------------------------------------------------------------------------------
 // main program:
@@ -26,11 +29,11 @@ axios.get(cfg.url)
     const arr = response.data;
     const all = cfg.names.length == 0;
 
-    arr.sort(sortInclusion);
-
-    arr.forEach(elem => {
+    arr.sort(sortTotal);
+    const maxIdx = arr.length;
+    arr.forEach((elem, idx) => {
       if (all || cfg.names.includes(elem.name))
-        outData(elem);
+        outData(elem, idx + 1, maxIdx);
     });
 
   })
@@ -64,25 +67,36 @@ function LoadConfigFile(fileName) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-function outData(data) {
-  const valid = data.invalidityReasons == '';
+function outData(data, idx, maxIdx) {
+  const valid = data.valid;
 
-  out(valid, 'Name:', data.name);
-  if (!valid)
+  out(valid, 'Index:        ', idx + '/' + maxIdx);
+  out(valid, 'Name:         ', data.name);
+
+  //  out(valid, 'Valid:', valid);
+  if (!valid) {
     out(valid, 'Invalidity Reasons:', data.invalidityReasons);
-  out(valid, 'Stash:', data.stash);
+
+    if (Array.isArray(data.validity))
+      data.validity.forEach(elem => {
+        if (!elem.valid)
+          out(elem.valid, ' ' + elem.type + ':', elem.details == '' ? 'ok' : elem.details);
+      });
+  }
+
+  out(valid, 'Stash:        ', data.stash);
 
   if (Exist(data.version))
-    out(valid, 'Version:', data.version);
+    out(valid, 'Version:      ', data.version);
 
   if (Exist(data.updated))
-    out(valid, 'Updated:', data.updated);
+    out(valid, 'Updated:      ', data.updated);
 
   if (Exist(data.discoveredAt))
-    out(valid, 'Discovered:', TimeStr(data.discoveredAt));
+    out(valid, 'Discovered:   ', TimeStr(data.discoveredAt));
 
   if (Exist(data.nominatedAt))
-    out(valid, 'Nominated:', TimeStr(data.nominatedAt));
+    out(valid, 'Nominated:    ', TimeStr(data.nominatedAt));
 
   if (Exist(data.onlineSince))
     out(valid, 'Online Since:', TimeStr(data.onlineSince));
@@ -91,17 +105,17 @@ function outData(data) {
     out(valid, 'Offline Since:', TimeStr(data.offlineSince));
 
   if (Exist(data.offlineAccumulated))
-    out(valid, 'Offline Accumulated:', data.offlineAccumulated);
+    out(valid, 'Offline Accum:', data.offlineAccumulated);
 
   if (Exist(data.rank))
-    out(valid, 'Rank:', data.rank);
+    out(valid, 'Rank:         ', data.rank);
   if (Array.isArray(data.rankEvents))
     data.rankEvents.forEach(elem => {
       out(valid, ' ', TimeStr(elem.when) + ', StartEra:' + elem.startEra + ', ActiveEra:' + elem.activeEra);
     });
 
   if (Exist(data.faults))
-    out(valid, 'Faults:', data.faults);
+    out(valid, 'Faults:       ', data.faults);
   if (Array.isArray(data.faultEvents))
     data.faultEvents.forEach(elem => {
       out(valid, ' ', TimeStr(elem.when) + ', Reason:' + elem.reason);
@@ -115,13 +129,27 @@ function outData(data) {
   }
 
   if (Exist(data.commission))
-    out(valid, 'Commission:', data.commission + '%');
+    out(valid, 'Commission:   ', data.commission + '%');
 
   if (Exist(data.identity))
-    out(valid, 'Identity:', IdentityStr(data.identity));
+    out(valid, 'Identity:     ', IdentityStr(data.identity));
 
   if (Exist(data.inclusion))
-    out(valid, 'Inclusion:', data.inclusion);
+    out(valid, 'Inclusion:    ', round(data.inclusion));
+
+  if (Exist(data.score)) {
+    out(valid, 'Score:', '');
+    out(valid, ' Total:       ', round(data.score.total));
+    out(valid, ' 28 Era Incl: ', round(data.score.spanInclusion) + '/40');
+    out(valid, ' 84 Era Incl: ', round(data.score.inclusion) + '/10');
+    out(valid, ' Discovered:  ', round(data.score.discovered) + '/5');
+    out(valid, ' Nominated:   ', round(data.score.nominated) + '/35');
+    out(valid, ' Rank:        ', round(data.score.rank) + '/5');
+    out(valid, ' Unclaimed:   ', round(data.score.unclaimed) + '/15');
+    out(valid, ' Self-Bonded: ', round(data.score.bonded) + '/13');
+    out(valid, ' Faults:      ', round(data.score.faults) + '/5');
+    out(valid, ' Downtime:    ', round(data.score.offline) + '/2');
+  }
 
   console.log();
 }
@@ -177,7 +205,7 @@ function IdentityStr(identity) {
 
 //---------------------------------------------------------------------------------------------------------------------
 function Exist(value) {
-  return typeof value !== 'undefined';
+  return value !== undefined && value !== null;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -189,8 +217,23 @@ function out(valid, title, data) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-function sortInclusion(a, b) {
-  const aIncl = isNaN(a.inclusion) ? -1 : a.inclusion;
-  const bIncl = isNaN(b.inclusion) ? -1 : b.inclusion;
-  return aIncl - bIncl;
+// round v with n decimals
+function round(v, n) {
+  if (!n)
+    n = 2;
+  const p = Math.pow(10, n);
+  return Math.round(v * p) / p;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+// sort function by "total" value
+// invalid records at the end
+function sortTotal(a, b) {
+  let aTotal = isNaN(a.total) ? -1 : a.total;
+  let bTotal = isNaN(b.total) ? -1 : b.total;
+  if (!a.valid)
+    aTotal -= 200;
+  if (!b.valid)
+    bTotal -= 200;
+  return bTotal - aTotal;
 }
