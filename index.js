@@ -114,6 +114,9 @@ function outData(data, idx, maxIdx) {
       out(valid, ' ', TimeStr(elem.when) + ', StartEra:' + elem.startEra + ', ActiveEra:' + elem.activeEra);
     });
 
+  if (Exist(data.location))
+    out(valid, 'Location:     ', data.location);
+
   if (Exist(data.faults))
     out(valid, 'Faults:       ', data.faults);
   if (Array.isArray(data.faultEvents))
@@ -140,15 +143,18 @@ function outData(data, idx, maxIdx) {
   if (Exist(data.score)) {
     out(valid, 'Score:', '');
     out(valid, ' Total:       ', round(data.score.total));
-    out(valid, ' 28 Era Incl: ', round(data.score.spanInclusion) + '/40');
-    out(valid, ' 84 Era Incl: ', round(data.score.inclusion) + '/10');
+    out(valid, ' 28 Era Incl: ', round(data.score.spanInclusion) + '/60');
+    out(valid, ' 84 Era Incl: ', round(data.score.inclusion) + '/40');
     out(valid, ' Discovered:  ', round(data.score.discovered) + '/5');
-    out(valid, ' Nominated:   ', round(data.score.nominated) + '/35');
+    out(valid, ' Nominated:   ', round(data.score.nominated) + '/10');
     out(valid, ' Rank:        ', round(data.score.rank) + '/5');
-    out(valid, ' Unclaimed:   ', round(data.score.unclaimed) + '/15');
-    out(valid, ' Self-Bonded: ', round(data.score.bonded) + '/13');
+    out(valid, ' Self-Bonded: ', round(data.score.bonded) + '/50');
     out(valid, ' Faults:      ', round(data.score.faults) + '/5');
-    out(valid, ' Downtime:    ', round(data.score.offline) + '/2');
+    out(valid, ' Offline:     ', round(data.score.offline) + '/2');
+    out(valid, ' Location:    ', round(data.score.location) + '/40');
+    out(valid, ' CouncilStake:', round(data.score.councilStake) + '/50');
+    out(valid, ' Democracy:   ', round(data.score.democracy));
+    out(valid, ' Unclaimed:   ', round(data.score.unclaimed));
   }
 
   console.log();
